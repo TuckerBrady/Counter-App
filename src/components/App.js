@@ -1,12 +1,23 @@
-import React, { useState } from "react";
-import RecipeList from "./RecipeList";
+import React, { useState, useEffect } from 'react';
+import RecipeList from './RecipeList';
+import RecipeEdit from "./RecipeEdit";
 import '../components/css/app.css';
 import { v4 as uuidv4 } from 'uuid';
 
 export const RecipeContext = React.createContext()
+const LOCAL_STORAGE_KEY = 'cookingWithReact.recipes'
 
 function App() {
   const [recipes, setRecipes] = useState(sampleRecipes)
+
+  useEffect(() => {
+    const recipeJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (recipeJSON != null) setRecipes(JSON.parse(recipeJSON))
+  }, [])
+ 
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(recipes))
+  }, [recipes])
 
   const recipeContextValue = {
     handleRecipeAdd,
@@ -19,7 +30,7 @@ function App() {
       name: 'New',
       servings: 1,
       cookTime: '1:00',
-      instructions: 'Instru.',
+      instructions: 'Instr.',
       ingredients: [
         { id: uuidv4(), name: 'Name', amount: '1 Tbs' }
       ]
@@ -31,10 +42,11 @@ function App() {
   function handleRecipeDelete(id) {
     setRecipes(recipes.filter(recipe => recipe.id !== id))
   }
-  
+
   return (
     <RecipeContext.Provider value={recipeContextValue}>
       <RecipeList recipes={recipes} />
+      <RecipeEdit />
     </RecipeContext.Provider>
   )
 }
@@ -45,7 +57,7 @@ const sampleRecipes = [
     name: 'Plain Chicken',
     servings: 3,
     cookTime: '1:45',
-    instructions: "1. Put salt on Chicken\n2. Put chicken in oven\n3. Eat chicken",
+    instructions: "1. Put salt on chicken\n2. Put chicken in oven\n3. Eat chicken",
     ingredients: [
       {
         id: 1,
@@ -56,7 +68,7 @@ const sampleRecipes = [
         id: 2,
         name: 'Salt',
         amount: '1 Tbs'
-      },
+      }
     ]
   },
   {
@@ -64,7 +76,7 @@ const sampleRecipes = [
     name: 'Plain Pork',
     servings: 5,
     cookTime: '0:45',
-    instructions: "1. Put paprika on Pork\n2. Put Pork in oven\n3. Eat Pork",
+    instructions: "1. Put paprika on pork\n2. Put pork in oven\n3. Eat pork",
     ingredients: [
       {
         id: 1,
@@ -75,7 +87,7 @@ const sampleRecipes = [
         id: 2,
         name: 'Paprika',
         amount: '2 Tbs'
-      },
+      }
     ]
   }
 ]
